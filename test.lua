@@ -2,7 +2,7 @@ local Test = {}
 local XML = require("TestLuaCode.Lib.XML")
 
 function Test.Run(str)
-	require("TestLuaCode.Lib.IncludeA")
+	require("TestLuaCode.Lib.EmptyModule")
 	require("TestLuaCode.Lib.Lib.IncludeB")
 
 	GLOBAL1 = 1

@@ -1,4 +1,4 @@
-import { readFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import { LuaFactory } from 'wasmoon';
 
 const main = async () => {
@@ -7,18 +7,13 @@ const main = async () => {
   const lua = await factory.createEngine({enableProxy: false});
 
   // Mount the files which lua code calls require() on
-  const REQUIRED_MODULES = [
-    'TestLuaCode/Lib/XML.lua',
-    'TestLuaCode/Lib/IncludeA.lua',
-    'TestLuaCode/Lib/Lib/IncludeB.lua',
-  ];
-  for (const path of REQUIRED_MODULES) {
-    await factory.mountFile(path, readFileSync(path));
-  }
+  await factory.mountFile('TestLuaCode/Lib/XML.lua', await readFile('LuaCode/XML.lua'));
+  await factory.mountFile('TestLuaCode/Lib/EmptyModule.lua', Buffer.from(""));
+  await factory.mountFile('TestLuaCode/Lib/Lib/IncludeB.lua', await readFile('LuaCode/IncludeB.lua'));
 
   const origRequire = lua.global.get('require');
   lua.global.set('require', (path: string) => origRequire(path));
-  await factory.mountFile('test.lua', readFileSync('test.lua'));
+  await factory.mountFile('test.lua', await readFile('test.lua'));
   const testObj = await lua.doFile('test.lua');
   testObj.Run('TEST');
 };

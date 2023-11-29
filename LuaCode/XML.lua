@@ -17,6 +17,4 @@ function XML.GetLuaFiles(path)
 	return result
 end
 
-do
-	return XML
-end
+return XML
